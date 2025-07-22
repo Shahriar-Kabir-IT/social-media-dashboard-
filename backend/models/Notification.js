@@ -5,14 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    is_read: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
+    // ... rest of your Notification model definition
   }, {
     tableName: 'notifications',
     timestamps: true,

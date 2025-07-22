@@ -7,26 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    password_hash: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    role: {
-      type: DataTypes.ENUM('ceo', 'manager'),
-      allowNull: false
-    }
+    // ... rest of your User model definition
   }, {
     tableName: 'users',
     timestamps: true,

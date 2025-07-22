@@ -1,5 +1,3 @@
-const bcrypt = require('bcryptjs');
-
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
     id: {
@@ -7,34 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    platform: {
-      type: DataTypes.ENUM('facebook', 'twitter', 'instagram', 'linkedin', 'youtube'),
-      allowNull: false
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    media_url: {
-      type: DataTypes.STRING(255)
-    },
-    media_type: {
-      type: DataTypes.STRING(50)
-    },
-    scheduled_time: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'approved', 'rejected', 'published'),
-      defaultValue: 'pending'
-    },
-    rejection_reason: {
-      type: DataTypes.TEXT
-    },
-    published_at: {
-      type: DataTypes.DATE
-    }
+    // ... rest of your Post model definition
   }, {
     tableName: 'posts',
     timestamps: true,
