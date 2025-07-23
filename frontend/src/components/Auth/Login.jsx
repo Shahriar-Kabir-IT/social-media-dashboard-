@@ -1,39 +1,33 @@
-import React, { useState} from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import "./Login.css";
+import React, { useState } from 'react';
+
+import { useAuth } from '../../context/AuthContext';
+import './Login.css';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-    role: "manager", // default role
+    email: '',
+    password: '',
+    role: 'manager'
   });
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const { login } = useAuth();
-  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCredentials((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setCredentials(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-
+    setError('');
+    
     try {
       await login(credentials);
-      navigate(
-        credentials.role === "ceo" ? "/ceo-dashboard" : "/manager-dashboard"
-      );
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -43,14 +37,13 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <h2>Social Media Dashboard</h2>
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
-          {error && <div className="error-message">{error}</div>}
-
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label>Email</label>
             <input
               type="email"
-              id="email"
               name="email"
               value={credentials.email}
               onChange={handleChange}
@@ -59,10 +52,9 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label>Password</label>
             <input
               type="password"
-              id="password"
               name="password"
               value={credentials.password}
               onChange={handleChange}
@@ -71,9 +63,8 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="role">Role</label>
+            <label>Role</label>
             <select
-              id="role"
               name="role"
               value={credentials.role}
               onChange={handleChange}
@@ -85,7 +76,7 @@ const Login = () => {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>
