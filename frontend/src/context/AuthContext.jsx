@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const AuthContext = createContext();
@@ -7,35 +6,46 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
+  // Auth check that only runs once
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setUser(null);
+          return;
+        }
+
         const { data } = await api.get('/auth/check');
         setUser(data.data);
-      } catch {
+      } catch (err) {
+        localStorage.removeItem('token');
         setUser(null);
       } finally {
         setLoading(false);
+        setInitialCheckDone(true);
       }
     };
-    checkAuth();
-  }, []);
+
+    if (!initialCheckDone) {
+      checkAuth();
+    }
+  }, [initialCheckDone]);
 
   const login = async (credentials) => {
     try {
       setLoading(true);
       const { data } = await api.post('/auth/login', {
-        email: credentials.email.toLowerCase().trim(),
-        password: credentials.password.trim(),
+        email: credentials.email,
+        password: credentials.password,
         role: credentials.role
       });
       
       localStorage.setItem('token', data.token);
       setUser(data.data);
-      
-      navigate(data.data.role === 'ceo' ? '/ceo-dashboard' : '/manager-dashboard');
+      return true; // Return success status
     } finally {
       setLoading(false);
     }
@@ -44,25 +54,17 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post('/auth/logout');
+    } finally {
       localStorage.removeItem('token');
       setUser(null);
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
     }
   };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
+      {initialCheckDone && children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
